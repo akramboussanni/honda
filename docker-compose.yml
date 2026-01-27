@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  honda:
+    image: ghcr.io/akramboussanni/honda:main
+    container_name: honda
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    network_mode: host
+    environment:
+        - ADMIN_USER=admin
+        - ADMIN_PASSWORD=admin

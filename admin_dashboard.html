@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Wake on LAN Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Manage Machines</h1>
+
+            <form id="addMachineForm"
+                style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Add New Machine</h3>
+                <input type="text" id="machineName" placeholder="Machine Name (e.g., Gaming PC)" required>
+                <input type="text" id="machineMac" placeholder="MAC Address (e.g., AA:BB:CC:DD:EE:FF)" required>
+                <input type="text" id="machinePass" placeholder="Wake Password" required>
+                <button type="submit" class="btn">Add Machine</button>
+            </form>
+
+            <div id="machineList" class="machine-list">
+                <!-- Machines will be loaded here -->
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <a href="index.html" style="color: var(--accent-color); text-decoration: none;">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

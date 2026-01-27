@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wake on LAN Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Wake Machines</h1>
+            <div id="machineList" class="machine-list">
+                <!-- Machines will be loaded here -->
+                <p style="text-align:center; color: #94a3b8;">Loading machines...</p>
+            </div>
+            <div style="margin-top: 2rem; text-align: center;">
+                <a href="/admin" style="color: var(--accent-color); text-decoration: none; font-size: 0.9rem;">Admin
+                    Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wake Modal -->
+    <div id="wakeModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="margin-bottom: 1rem;">Wake Machine</h2>
+            <input type="password" id="wakePassword" placeholder="Enter remote access password">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+                <button class="btn" onclick="confirmWake()">Wake Up</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
