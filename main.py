@@ -117,6 +117,7 @@ def on_startup():
 class MachineCreate(BaseModel):
     name: str
     mac_address: str
+    ip_address: str = ""
     password: str = ""
     category: str = "Uncategorized"
     wol_enabled: bool = True
