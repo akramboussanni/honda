@@ -157,26 +157,24 @@ function renderDiscovery(devices) {
 function addDiscoveredMachine(ip, mac, name) {
     const nameInput = document.getElementById('machineName');
     const macInput = document.getElementById('machineMac');
-
-    if (nameInput) {
-        nameInput.value = name || `Device ${ip}`;
-        nameInput.placeholder = '';
-    }
     const ipInput = document.getElementById('machineIp');
     const categorySelect = document.getElementById('machineCategory');
     const passInput = document.getElementById('machinePassword');
     const wolCheckbox = document.getElementById('machineWolEnabled');
 
-    nameInput.value = hostname || `Device ${ip}`;
-    nameInput.placeholder = '';
-    macInput.value = mac;
-    ipInput.value = ip;
-    ipInput.readOnly = true;
-    categorySelect.value = 'Uncategorized';
-    passInput.value = '';
-    wolCheckbox.checked = true;
+    if (nameInput) nameInput.value = name || `Device ${ip}`;
+    if (nameInput) nameInput.placeholder = '';
+    if (macInput) macInput.value = mac;
+    if (ipInput) {
+        ipInput.value = ip;
+        ipInput.readOnly = true;
+    }
+    if (categorySelect) categorySelect.value = 'Uncategorized';
+    if (passInput) passInput.value = '';
+    if (wolCheckbox) wolCheckbox.checked = true;
 
     switchTab('devices');
+    showToast('Device info filled! Click "Add Device" to save.');
 }
 
 async function addMachine() {

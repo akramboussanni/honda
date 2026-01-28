@@ -11,4 +11,5 @@ services:
     environment:
         - ADMIN_USER=admin
         - ADMIN_PASSWORD=admin
+        # the app will not even launch if you dont change this!
         - SECRET_KEY=CHANGE-ME-PLEASE
