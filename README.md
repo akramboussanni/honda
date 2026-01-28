@@ -1,6 +1,6 @@
-# Honda WOL
+# Honda 
 
-A modern Wake-on-LAN (WOL) web application with network discovery, device management, and a clean dark mode interface.
+App for managing WOL and/or uptime & status of home machines. There is a [ESP32 app](https://github.com/abous/hondakey) that can be used to send WOL packets to the machines through the app.
 
 ![Admin Dashboard](assets/admin.png)
 ![Home Dashboard](assets/home.png)
