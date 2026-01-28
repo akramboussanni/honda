@@ -5,11 +5,11 @@ let machinesCache = [];
 async function fetchMachines() {
     try {
         const res = await fetch(`${API_URL}/machines`);
-        const machines = await res.json();
-        machinesCache = machines;
-        renderMachines(machines);
+        const data = await res.json();
+        machinesCache = data;
+        renderMachines(data);
     } catch (e) {
-        console.error("Failed to fetch machines", e);
+        console.error('Failed to fetch machines:', e);
     }
 }
 
@@ -61,7 +61,7 @@ function renderMachines(machines) {
                 actionsHtml = `
                     <div class="flex items-center">
                         ${pingBtn}
-                        <button class="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition font-medium text-sm shadow-sm" onclick="openWakeModal(${m.id}, '${m.name}')">Wake</button>
+                        <button class="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition font-medium text-sm shadow-sm" onclick="wake(${m.id})">Wake</button>
                     </div>
                 `;
             } else {
@@ -107,36 +107,53 @@ function openWakeModal(id, name) {
         }
     }
 }
+let currentWakeMachineId = null;
 
 function closeWakeModal() {
-    document.getElementById('wakeModal').classList.add('hidden');
-    wakeTargetId = null;
+    document.getElementById('wakePasswordModal').classList.add('hidden');
+    currentWakeMachineId = null;
 }
 
-async function sendWakePacket() {
-    const password = document.getElementById('wakePassword').value;
-    closeWakeModal();
-    await doWakeMachine(wakeTargetId, wakeTargetName, password);
+async function wake(machineId) {
+    const machine = machinesCache.find(m => m.id === machineId);
+    if (!machine) return;
+
+    currentWakeMachineId = machineId;
+
+    // If no password required, wake immediately
+    if (!machine.has_password) {
+        doWake('');
+        return;
+    }
+
+    // Otherwise show password modal
+    document.getElementById('wakePasswordModal').classList.remove('hidden');
+    document.getElementById('wakePassword').value = '';
+    document.getElementById('wakePassword').focus();
 }
 
-async function doWakeMachine(id, name, password) {
+async function doWake(password) {
+    if (currentWakeMachineId === null) return;
+
     try {
         const res = await fetch(`${API_URL}/wake`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ machine_id: id, password: password })
+            body: JSON.stringify({ machine_id: currentWakeMachineId, password })
         });
 
         if (res.ok) {
-            showToast(`Magic packet sent to ${name}!`);
-        } else if (res.status === 401) {
+            showToast('Wake-on-LAN packet sent!');
+        } else if (res.status === 403) {
             showToast('Incorrect password', true);
         } else {
             showToast('Failed to wake device', true);
         }
     } catch (e) {
-        showToast('Error sending wake request', true);
+        showToast('Error', true);
     }
+
+    closeWakeModal();
 }
 
 async function pingMachine(id, silent = false) {

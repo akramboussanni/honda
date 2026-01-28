@@ -207,6 +207,7 @@ def read_machines(session: Session = Depends(get_session)):
         "name": m.name, 
         "mac": m.mac_address,
         "ip_address": m.ip_address,
+        "has_password": bool(m.password),
         "category": m.category,
         "wol_enabled": m.wol_enabled,
         "online": machine_status.get(m.id)
@@ -228,8 +229,9 @@ def wake_machine(request: Request, wake_req: WakeRequest, session: Session = Dep
     if not machine:
         raise HTTPException(status_code=404, detail="Machine not found")
     
-    if machine.password != wake_req.password:
-        raise HTTPException(status_code=401, detail="Incorrect password")
+    # Only check password if one is set
+    if machine.password and machine.password != wake_req.password:
+        raise HTTPException(status_code=403, detail="Incorrect password")
     
     send_magic_packet(machine.mac_address)
     return {"message": f"Wake-on-LAN packet sent to {machine.name}"}
