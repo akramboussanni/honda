@@ -205,7 +205,8 @@ def read_machines(session: Session = Depends(get_session)):
     return [{
         "id": m.id, 
         "name": m.name, 
-        "mac": m.mac_address, 
+        "mac": m.mac_address,
+        "ip_address": m.ip_address,
         "category": m.category,
         "wol_enabled": m.wol_enabled,
         "online": machine_status.get(m.id)
