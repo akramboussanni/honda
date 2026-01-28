@@ -20,7 +20,7 @@ You can copy the `.env.example` file to `.env` and edit it to your liking.
 
 The application will be available at `http://localhost:8000`
 
-Note, the app has to run in host mode for network discovery + sending WOL magic packets to work.
+Note: the app has to run in host mode for network discovery + sending WOL magic packets to work (at least on Linux)
 
 ### Manual Deployment
 
