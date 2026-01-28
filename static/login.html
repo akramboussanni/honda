@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Honda WOL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        gray: {
+                            50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7', 300: '#d4d4d8',
+                            400: '#a1a1aa', 500: '#71717a', 600: '#52525b', 700: '#3f3f46',
+                            800: '#27272a', 900: '#18181b', 950: '#09090b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center transition-colors duration-200">
+
+    <div class="w-full max-w-md px-6">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div class="px-8 py-10">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">Honda</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Sign in to access the admin dashboard</p>
+                </div>
+
+                <div id="errorMsg"
+                    class="hidden mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p class="text-sm text-red-600 dark:text-red-400 text-center">Invalid credentials</p>
+                </div>
+
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label for="username"
+                            class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Username</label>
+                        <input type="text" id="username" required autocomplete="username"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-black focus:border-black dark:focus:ring-white dark:focus:border-white transition"
+                            placeholder="Enter your username">
+                    </div>
+                    <div>
+                        <label for="password"
+                            class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Password</label>
+                        <input type="password" id="password" required autocomplete="current-password"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-sm focus:ring-black focus:border-black dark:focus:ring-white dark:focus:border-white transition"
+                            placeholder="Enter your password">
+                    </div>
+                    <button type="submit"
+                        class="w-full py-2.5 px-4 bg-black dark:bg-white text-white dark:text-black font-medium text-sm rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition shadow-sm">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <a href="/"
+                        class="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.classList.add('hidden');
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    window.location.href = '/admin';
+                } else {
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (e) {
+                errorMsg.querySelector('p').textContent = 'An error occurred. Please try again.';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

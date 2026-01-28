@@ -11,3 +11,4 @@ services:
     environment:
         - ADMIN_USER=admin
         - ADMIN_PASSWORD=admin
+        - SECRET_KEY=CHANGE-ME-PLEASE

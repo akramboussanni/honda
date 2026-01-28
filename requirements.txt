@@ -4,3 +4,9 @@ wakeonlan
 pydantic
 slowapi
 sqlmodel
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+scapy
+ping3
+python-dotenv
