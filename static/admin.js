@@ -162,49 +162,67 @@ function addDiscoveredMachine(ip, mac, name) {
         nameInput.value = name || `Device ${ip}`;
         nameInput.placeholder = '';
     }
-    if (macInput) macInput.value = mac;
-    if (nameInput) nameInput.focus();
+    const ipInput = document.getElementById('machineIp');
+    const categorySelect = document.getElementById('machineCategory');
+    const passInput = document.getElementById('machinePassword');
+    const wolCheckbox = document.getElementById('machineWolEnabled');
 
-    showToast('Device info filled! Click "Add Device" to save.');
+    nameInput.value = hostname || `Device ${ip}`;
+    nameInput.placeholder = '';
+    macInput.value = mac;
+    ipInput.value = ip;
+    ipInput.readOnly = true;
+    categorySelect.value = 'Uncategorized';
+    passInput.value = '';
+    wolCheckbox.checked = true;
+
+    switchTab('devices');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const addForm = document.getElementById('addMachineForm');
-    if (addForm) {
-        addForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nameInput = document.getElementById('machineName');
-            const name = nameInput.value.trim() || nameInput.placeholder;
-            const mac = document.getElementById('machineMac').value;
-            const categoryEl = document.getElementById('machineCategory');
-            const category = categoryEl ? categoryEl.value || 'Uncategorized' : 'Uncategorized';
-            const password = document.getElementById('machinePass').value;
-            const wolEnabledEl = document.getElementById('wolEnabled');
-            const wolEnabled = wolEnabledEl ? wolEnabledEl.checked : true;
+async function addMachine() {
+    const name = document.getElementById('machineName').value.trim();
+    const mac = document.getElementById('machineMac').value.trim();
+    const ip = document.getElementById('machineIp').value.trim();
+    const category = document.getElementById('machineCategory').value;
+    const password = document.getElementById('machinePassword').value;
+    const wol_enabled = document.getElementById('machineWolEnabled').checked;
 
-            try {
-                const res = await fetch(`${API_URL}/admin/machines`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, mac_address: mac, password, category, wol_enabled: wolEnabled })
-                });
-
-                if (res.ok) {
-                    showToast('Device added successfully');
-                    addForm.reset();
-                    if (wolEnabledEl) wolEnabledEl.checked = true;
-                    fetchMachines();
-                } else if (res.status === 409) {
-                    showToast('A device with this MAC already exists', true);
-                } else {
-                    showToast('Failed to add device', true);
-                }
-            } catch (e) {
-                showToast('Error adding device', true);
-            }
-        });
+    if (!name || !mac) {
+        showToast('Name and MAC are required', true);
+        return;
     }
-});
+
+    try {
+        const res = await fetch(`${API_URL}/admin/machines`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                mac_address: mac,
+                ip_address: ip,
+                password,
+                category,
+                wol_enabled
+            })
+        });
+
+        if (res.ok) {
+            showToast('Device added');
+            document.getElementById('machineName').value = '';
+            document.getElementById('machineMac').value = '';
+            document.getElementById('machineIp').value = '';
+            document.getElementById('machineIp').readOnly = false;
+            document.getElementById('machinePassword').value = '';
+            fetchMachines();
+        } else if (res.status === 409) {
+            showToast('Device with this MAC already exists', true);
+        } else {
+            showToast('Failed to add device', true);
+        }
+    } catch (e) {
+        showToast('Error', true);
+    }
+}
 
 let pendingDeleteId = null;
 
@@ -247,7 +265,7 @@ async function doDeleteMachine(id) {
 async function pingAllDevices() {
     const btn = document.getElementById('pingAllBtn');
     const originalText = btn.innerHTML;
-    
+
     btn.disabled = true;
     btn.innerHTML = `
         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -256,11 +274,11 @@ async function pingAllDevices() {
         </svg>
         <span>Pinging...</span>
     `;
-    
+
     try {
         const res = await fetch(`${API_URL}/ping/all`, { method: 'POST' });
         const data = await res.json();
-        
+
         if (res.ok) {
             showToast(`Pinged ${data.total} devices: ${data.online} online, ${data.offline} offline`);
             await fetchMachines();
@@ -579,6 +597,7 @@ function openEditModal(machine) {
     document.getElementById('editMachineId').value = machine.id;
     document.getElementById('editName').value = machine.name;
     document.getElementById('editMac').value = machine.mac;
+    document.getElementById('editIp').value = machine.ip_address || '';
     document.getElementById('editCategory').value = machine.category || 'Uncategorized';
     document.getElementById('editWolEnabled').checked = machine.wol_enabled;
     document.getElementById('editPass').value = '';
@@ -595,28 +614,32 @@ document.addEventListener('DOMContentLoaded', () => {
         editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editMachineId').value;
-            const updates = {
-                name: document.getElementById('editName').value,
-                mac_address: document.getElementById('editMac').value,
-                category: document.getElementById('editCategory').value,
-                wol_enabled: document.getElementById('editWolEnabled').checked
-            };
-            const pass = document.getElementById('editPass').value;
-            if (pass) updates.password = pass;
+            const name = document.getElementById('editName').value.trim();
+            const mac = document.getElementById('editMac').value.trim();
+            const ip = document.getElementById('editIp').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const wol_enabled = document.getElementById('editWolEnabled').checked;
+            const password = document.getElementById('editPass').value;
+
+            const body = { name, mac_address: mac, ip_address: ip, category, wol_enabled };
+            if (password) body.password = password;
+
             try {
-                const res = await fetch('/admin/machines/' + id, {
+                const res = await fetch(`${API_URL}/admin/machines/${id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updates)
+                    body: JSON.stringify(body)
                 });
                 if (res.ok) {
                     showToast('Device updated');
                     closeEditModal();
                     fetchMachines();
                 } else {
-                    showToast('Failed to update', true);
+                    showToast('Failed to update device', true);
                 }
-            } catch (e) { showToast('Error', true); }
+            } catch (e) {
+                showToast('Error', true);
+            }
         });
     }
 });
